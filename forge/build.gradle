@@ -1,0 +1,17 @@
+plugins { id 'java-library'; id 'net.minecraftforge.gradle' version '6.0.36' }
+group='dev.arsinstinct'
+version=file('../VERSION').text.trim()
+base { archivesName='ars-instinct' }
+java { toolchain.languageVersion=JavaLanguageVersion.of(17); withSourcesJar() }
+sourceSets.main { java.srcDir '../common/src/main/java'; resources.srcDir '../common/src/main/resources' }
+repositories { flatDir { dirs '../../Ars-Conflux/forge/libs' }; mavenCentral { content { excludeGroup 'local' } } }
+minecraft { mappings channel:'official',version:'1.20.1' }
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
+    implementation project(':ars-conflux')
+    for(name in ['ars-nouveau','geckolib','curios','patchouli']) implementation fg.deobf("local:${name}:forge1201")
+}
+tasks.withType(JavaCompile).configureEach { options.encoding='UTF-8' }
+processResources { inputs.property 'version',project.version; filesMatching('META-INF/mods.toml') { expand(version:project.version) } }
+tasks.named('jar') { from('../LICENSE'); archiveFileName="ars-instinct-${version}-mc1.20.1-forge.jar"; finalizedBy 'reobfJar' }
+tasks.named('sourcesJar') { from('../LICENSE') }

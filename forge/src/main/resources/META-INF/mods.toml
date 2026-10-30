@@ -1,0 +1,33 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+[[mods]]
+modId="ars_instinct"
+version="${version}"
+displayName="Ars Instinct"
+authors="EndXiom"
+description='''Reusable, opt-in spellcasting AI driven by Ars glyph abilities.'''
+[[dependencies.ars_instinct]]
+modId="forge"
+mandatory=true
+versionRange="[47.4,48)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.ars_instinct]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.20.2)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.ars_instinct]]
+modId="ars_nouveau"
+mandatory=true
+versionRange="[4.12,5)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.ars_instinct]]
+modId="ars_conflux"
+mandatory=true
+versionRange="[0.1.44,0.2)"
+ordering="AFTER"
+side="BOTH"

@@ -1,0 +1,11 @@
+.gradle/
+build/
+run/
+libs/
+forge/.gradle/
+forge/build/
+forge/run/
+forge/libs/
+*.log
+.idea/
+.vscode/
