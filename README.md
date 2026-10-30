@@ -5,8 +5,8 @@ Opt-in, reusable spellcasting AI for Ars Nouveau programs. Mod ID: `ars_instinct
 ## Scope
 
 - Minecraft 1.21.1 NeoForge / Java 21 and 1.20.1 Forge / Java 17; shared version in `VERSION`.
-- Required: Ars Nouveau and Ars Conflux **0.1.44+**. No Iron, Goety, or modpack dependency.
-- Installation alone does **not** add goals to mobs, grant spells, choose enemies, or create mana pools.
+- Required: Ars Nouveau and Ars Conflux **0.1.45+**. No Iron, Goety, or modpack dependency.
+- Installation alone does **not** add goals to mobs, grant spells or choose enemies. Core now owns lazy native non-player mana initialization/regeneration.
 - Callers supply a real Ars-capable tool, existing resource lifecycle, native target/navigation, and explicit goal installation.
 
 The first implementation reads a program's starting form and first significant ability. A projectile replacement in the initial form's augments takes priority over following hit effects. Unknown/unlabelled abilities are skipped, rather than guessed to be hostile.
@@ -29,7 +29,7 @@ if (plan != null) {
 
 Public types are under `dev.arsinstinct.api`. `CombatBackend` adapts an equipment/resource system once, not once per species. Implement `programs`, `describe`, dry `budget`, native `available` and native `cast`; optionally expose shared cooldown keys/durations, selection, aim origin and recipient usefulness. A `Budget.possible=false` means that program cannot be funded at full capacity or cannot be estimated. A merely unaffordable candidate can be reserved while the actor regenerates.
 
-The default `NativeSpellBackend` reads native Ars slots and uses the actual LivingEntity, hand, native resolver, Conflux quotes and active-cast entrypoint. Quotes do not charge resources; the actual provider/resolver performs payment. Estimates cover one initial activation of each paid glyph, not unlimited future scatter/hits/channel ticks. Unknown triggered prices are skipped conservatively. Capacity detection currently covers the native Ars pool; other providers can supply stronger capacity/cooldown estimates through a backend.
+The default `NativeSpellBackend` reads native Ars slots and uses the actual LivingEntity, hand, native resolver, Core-managed native mana, combined resource budgets, shared provider cooldown facts and the active-cast entrypoint. Quotes do not charge resources; the actual provider/resolver performs payment. Estimates cover one initial activation of each paid glyph, not unlimited future scatter/hits/channel ticks. Unknown triggered prices are skipped conservatively. Account capacity is provider-owned. Unknown prices are never treated as free, and unknown capacities are only admitted when already affordable. Native Ars trigger billing includes the first future native effect fees in its estimate.
 
 `SpellCombatController` is caller-owned; clear/release it when the actor unloads, changes role, or is discarded. No global scan, fake-player casting or per-tick world registry. Default decisions every five ticks and navigation every ten ticks; target selection is local to each actor's configured range. Stop/leave lifecycle remains the installing mod's responsibility for controllers outside the supplied goal.
 
@@ -51,9 +51,28 @@ A data pack can replace the complete hint set, including clearing it with `[]`:
 
 Server reloads atomically replace the snapshot. Removing an override restores code defaults. Absent optional mods are allowed in data. Nothing changes native target permissions. `area` distinguishes area healing from a self-only heal. Receiver tags describe who executes/receives an ability: breath or a dash can damage enemies while being granted to an ally.
 
+## Optional automatic installation
+
+World server configuration: `serverconfig/ars_instinct-server.toml` (or matching `defaultconfigs` preset).
+
+```toml
+enabled = false
+entity_types = []
+goal_priority = 1
+movement_speed = 1.0
+maximum_mana = -1.0
+mana_regeneration = -1.0
+```
+
+When explicitly enabled, only the listed entity types **or** members of the `ars_instinct:spellcasters` entity-type tag receive the goal, on entity join. No wildcard. The optional mana overrides use -1 for the native Ars/content policy; they do not refill existing pools. Duplicate join/install attempts do not add duplicate goals. Native target selection, aggression, equipment and alternative movement are still content-owned. Changes apply on the next join/restart, not through a world-wide scan.
+
+Code callers can use `InstinctCasting.install(mob, priority, speed[, backend])` without enabling the configuration. The provided goal is for ordinary ground navigation; flying casters should use the controller and retain their own flight rules.
+
 ## Current limits
 
-This is a developer-facing first release, not a configurable automatic mob overhaul. No complete spell graph reasoning, tactical retreat, summon management, species loadouts or GUI. Position-only/unknown shapes are not automatically planned. Mana initialization/regeneration and pack-specific non-player cooldown/levels have **not** been extracted in this batch; Beneath the Dying Sun retains those native-Ars-backed responsibilities. Its ordinary ground casting and custom flying controllers consume Instinct instead of duplicating the selector.
+No complete spell-graph reasoning, tactical retreat, summon management, generated loadouts or GUI. Position-only/unknown shapes are not automatically planned. NPC-only soul accounts are not invented: Goety users must supply a real account or explicitly select the existing Ars resource mode. Ability hints and usefulness predicates guide AI, but never bypass native permissions or restrictions. Summons retain their original provider lifecycle and limits.
+
+Beneath the Dying Sun now delegates mana lifecycle, quotes and non-player provider cooldowns to Core/addons, while retaining species values, equipment preparation, fixed-book permissions, preset levels and special flight/aggro. Integration does not require that pack.
 
 ## Build and validation
 
@@ -67,4 +86,4 @@ This is a developer-facing first release, not a configurable automatic mob overh
 
 Sibling `Ars-Conflux` checkout is the default build dependency (`-PconfluxCheckout=...` overrides it); local native mod jars follow Core's existing `libs` layout and are never bundled. Forge `:jar` finalizes with `:reobfJar`; deploy that reobfuscated jar.
 
-Integration test evidence and current migration boundaries are recorded in `docs/implementation-0.1.0.md`. Client visual behavior is not implied by server tests.
+Integration test evidence and current migration boundaries are recorded in `docs/implementation-0.1.1.md`. Client visual behavior is not implied by server tests.

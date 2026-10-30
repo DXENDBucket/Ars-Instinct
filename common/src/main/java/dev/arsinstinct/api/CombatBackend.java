@@ -10,7 +10,14 @@ import java.util.*;
 
 /** One integration for a tool/resource system, not one AI implementation per creature. Server-thread only. */
 public interface CombatBackend {
-    record Program(int slot,Spell spell) {public Program {Objects.requireNonNull(spell);}}
+    record Program(int slot,Spell spell) {
+        public Program {Objects.requireNonNull(spell);}
+        // Ars 4 deserializes a fresh Spell on every tool read and has identity-only Spell.equals.
+        // Item snapshots separately guard all tool metadata, including presentation/color changes.
+        @Override public boolean equals(Object other) {return other instanceof Program p&&slot==p.slot()
+                &&dev.arsconflux.api.glyph.ArsSpellAccess.parts(spell).equals(dev.arsconflux.api.glyph.ArsSpellAccess.parts(p.spell()));}
+        @Override public int hashCode() {return 31*slot+dev.arsconflux.api.glyph.ArsSpellAccess.parts(spell).hashCode();}
+    }
     record Budget(boolean possible,boolean affordable) {
         public static final Budget UNKNOWN=new Budget(false,false);
     }

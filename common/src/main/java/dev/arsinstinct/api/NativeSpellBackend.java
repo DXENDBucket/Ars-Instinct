@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import java.util.*;
 
-/** Native Ars tools using an existing real Ars pool. Does not create a second pool or fake player. */
+/** Native Ars tools using the real native Ars pool. Does not create a second pool or fake player. */
 public class NativeSpellBackend implements CombatBackend {
     @Override public List<Program> programs(LivingEntity actor,ItemStack tool) {return NativePrograms.programs(tool);}
     @Override public void select(LivingEntity actor,ItemStack tool,Program program) {NativePrograms.select(tool,program.slot());}
@@ -25,26 +25,17 @@ public class NativeSpellBackend implements CombatBackend {
         return null;
     }
     protected SpellContext context(LivingEntity actor,ItemStack tool,Spell spell) {return SpellContext.fromEntity(spell,actor,tool);}
+    @Override public boolean useful(LivingEntity actor,LivingEntity recipient,Spell spell) {
+        return GlyphConditions.useful(ProgramIntent.of(spell).primary(),actor,recipient);
+    }
     @Override public Budget budget(LivingEntity actor,ItemStack tool,Program program) {
-        var context=context(actor,tool,program.spell());
-        var quote=SpellResourceQuotes.estimate(context);
-        if(!quote.complete())return Budget.UNKNOWN;
-        var ars=new ArsManaAccount(context.getCaster());
-        record Total(ResourceAccount account,long amount) {}
-        var totals=new HashMap<Object,Total>();
-        totals.put(ars.reservationKey(),new Total(ars,Math.max(0,new SpellResolver(context).getResolveCost())));
-        for(var entry:quote.entries()) {
-            var charge=entry.charge();var key=charge.account().reservationKey();var old=totals.get(key);
-            totals.put(key,new Total(charge.account(),charge.amount()+(old==null?0:old.amount())));
-        }
-        boolean possible=true,affordable=true;
-        for(var total:totals.values()) {
-            if(total.account().free())continue;
-            if(total.account().reservationKey().equals(ars.reservationKey()))
-                possible&=NativePrograms.maximumMana(actor)>=total.amount();
-            affordable&=ResourceTransactions.canSpend(total.account(),total.amount());
-        }
-        return new Budget(possible,affordable);
+        var quote=SpellBudgets.estimate(context(actor,tool,program.spell()));
+        return new Budget(quote.possible(),quote.affordable());
+    }
+    @Override public Map<net.minecraft.resources.ResourceLocation,Integer> cooldowns(LivingEntity actor,Program program) {
+        var result=new LinkedHashMap<net.minecraft.resources.ResourceLocation,Integer>();
+        for(var quote:ActiveCasts.cooldowns(program.spell(),actor,ActiveCastSource.CASTER_TOOL))result.merge(quote.key(),quote.duration(),Math::max);
+        return Map.copyOf(result);
     }
     @Override public long readyAt(LivingEntity actor,Program program) {
         var rejection=ActiveCasts.rejection(program.spell(),actor,ActiveCastSource.CASTER_TOOL);

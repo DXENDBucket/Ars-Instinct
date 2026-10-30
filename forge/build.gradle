@@ -5,7 +5,22 @@ base { archivesName='ars-instinct' }
 java { toolchain.languageVersion=JavaLanguageVersion.of(17); withSourcesJar() }
 sourceSets.main { java.srcDir '../common/src/main/java'; resources.srcDir '../common/src/main/resources' }
 repositories { flatDir { dirs '../../Ars-Conflux/forge/libs' }; mavenCentral { content { excludeGroup 'local' } } }
-minecraft { mappings channel:'official',version:'1.20.1' }
+sourceSets { gameTest { java.srcDir '../common/src/gameTest/java'; compileClasspath+=sourceSets.main.output; runtimeClasspath+=sourceSets.main.output; resources.srcDir '../src/gameTest/resources' } }
+configurations { gameTestImplementation.extendsFrom implementation; gameTestRuntimeOnly.extendsFrom runtimeOnly }
+evaluationDependsOn(':ars-conflux')
+def core=project(':ars-conflux').sourceSets.main
+minecraft {
+ mappings channel:'official',version:'1.20.1'
+ runs { gameTestServer {
+  workingDirectory project.file('run/gametest');jvmArgs '-Xmx1000m'
+  property 'forge.enabledGameTestNamespaces','ars_instinct'
+  property 'mixin.env.remapRefMap','true'
+  property 'mixin.env.refMapRemappingFile',"${projectDir}/build/createSrgToMcp/output.srg"
+  args '--mixin.config','ars_conflux.mixins.json'
+  mods { ars_conflux { source core }; ars_instinct { source sourceSets.main; source sourceSets.gameTest } }
+ } }
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
     implementation project(':ars-conflux')

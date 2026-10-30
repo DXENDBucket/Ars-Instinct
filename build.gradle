@@ -6,7 +6,7 @@ java { toolchain.languageVersion = JavaLanguageVersion.of(21); withSourcesJar() 
 repositories { mavenCentral() }
 sourceSets {
     main { java.srcDir 'common/src/main/java'; resources.srcDir 'common/src/main/resources' }
-    gameTest { compileClasspath += sourceSets.main.output; runtimeClasspath += sourceSets.main.output }
+    gameTest { java.srcDir 'common/src/gameTest/java'; compileClasspath += sourceSets.main.output; runtimeClasspath += sourceSets.main.output }
 }
 configurations { gameTestImplementation.extendsFrom implementation; gameTestCompileOnly.extendsFrom compileOnly; gameTestRuntimeOnly.extendsFrom runtimeOnly }
 evaluationDependsOn(':ars-conflux')

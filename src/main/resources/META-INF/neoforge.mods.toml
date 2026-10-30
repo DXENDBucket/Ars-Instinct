@@ -28,6 +28,6 @@ side="BOTH"
 [[dependencies.ars_instinct]]
 modId="ars_conflux"
 type="required"
-versionRange="[0.1.44,0.2)"
+versionRange="[0.1.45,0.2)"
 ordering="AFTER"
 side="BOTH"
