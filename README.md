@@ -11,6 +11,10 @@ Opt-in, reusable spellcasting AI for Ars Nouveau programs. Mod ID: `ars_instinct
 
 The first implementation reads a program's starting form and first significant ability. A projectile replacement in the initial form's augments takes priority over following hit effects. Unknown/unlabelled abilities are skipped, rather than guessed to be hostile.
 
+## 0.1.2: shared-cooldown opportunities
+
+The caller-owned controller records successfully submitted programs. Among ready, affordable, usable programs sharing a nonzero cooldown key, a more recently used program yields to an older one. The longer-cooldown preference remains for ties and waiting opportunities, but cannot permanently monopolize an older sibling. Independent cooldown groups retain weighted selection. History survives usefulness changes and ordinary plan clears, and is pruned when a program leaves the current loadout. No native cooldown is rewritten or bypassed. This batch is built for both loaders without launching game tests.
+
 ## Entry points
 
 ```java

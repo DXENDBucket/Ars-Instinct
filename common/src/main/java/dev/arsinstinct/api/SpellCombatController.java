@@ -22,6 +22,8 @@ public final class SpellCombatController {
     private long savingSince;
     private LivingEntity enemy;
     private int lastSlot=-1;
+    private final Map<CombatBackend.Program,Long> lastUsed=new HashMap<>();
+    private long uses;
     public SpellCombatController(CombatBackend backend) {this(backend,Policy.DEFAULT);}
     public SpellCombatController(CombatBackend backend,Policy policy) {this.backend=Objects.requireNonNull(backend);this.policy=Objects.requireNonNull(policy);}
     public Plan current() {return plan;}
@@ -31,17 +33,28 @@ public final class SpellCombatController {
         return max*100000L+durations.values().stream().mapToLong(v->Math.max(0,v)).sum();
     }
     private boolean delays(LivingEntity actor,Plan shorter,Plan longer) {
+        // A longer shared cooldown must not permanently monopolize an older sibling.
+        if(lastUsed.getOrDefault(shorter.program(),0L)<lastUsed.getOrDefault(longer.program(),0L))return false;
         var a=backend.cooldowns(actor,shorter.program());var b=backend.cooldowns(actor,longer.program());
         if(score(b)<=score(a))return false;
         long remaining=Math.max(0,backend.readyAt(actor,longer.program())-actor.level().getGameTime());
         return a.entrySet().stream().anyMatch(e->b.containsKey(e.getKey())&&e.getValue()>remaining);
     }
+    private boolean owesTurn(LivingEntity actor,ItemStack tool,Plan candidate,Plan other,long now) {
+        if(lastUsed.getOrDefault(candidate.program(),0L)<=lastUsed.getOrDefault(other.program(),0L)
+                ||backend.readyAt(actor,other.program())>now)return false;
+        var a=backend.cooldowns(actor,candidate.program());var b=backend.cooldowns(actor,other.program());
+        return a.entrySet().stream().anyMatch(e->e.getValue()>0&&b.getOrDefault(e.getKey(),0)>0)
+                &&backend.budget(actor,tool,other.program()).affordable()&&backend.available(actor,tool,other.program());
+    }
     public Plan select(LivingEntity actor,ItemStack tool,LivingEntity enemy) {
         if(actor.level().isClientSide||!actor.isAlive()||backend.busy(actor))return null;
         if(!ItemStack.matches(tool,toolSnapshot))clear();
         long now=actor.level().getGameTime();
+        var programs=backend.programs(actor,tool);
+        lastUsed.keySet().removeIf(program->!programs.contains(program));
         var candidates=new ArrayList<Plan>();
-        for(var program:backend.programs(actor,tool)) {
+        for(var program:programs) {
             Spell spell=program.spell();var ability=backend.describe(actor,tool,spell);
             if(ability==null||ArsSpellAccess.parts(spell).stream().anyMatch(p->!p.isEnabled()))continue;
             var target=backend.recipient(actor,tool,enemy,program,ability);
@@ -52,11 +65,13 @@ public final class SpellCombatController {
         }
         Plan chosen=null;
         if(plan!=null&&now-savingSince<=policy.maximumSavingTicks())for(var candidate:candidates)
-            if(candidate.program().equals(plan.program())&&backend.readyAt(actor,candidate.program())<=now){chosen=candidate;break;}
+            if(candidate.program().equals(plan.program())&&backend.readyAt(actor,candidate.program())<=now
+                    &&candidates.stream().noneMatch(other->other!=candidate&&owesTurn(actor,tool,candidate,other,now))){chosen=candidate;break;}
         if(chosen==null) {
             double total=0;
             for(var candidate:candidates) {
-                if(backend.readyAt(actor,candidate.program())>now||candidates.stream().anyMatch(other->other!=candidate&&delays(actor,candidate,other)))continue;
+                if(backend.readyAt(actor,candidate.program())>now||candidates.stream().anyMatch(other->other!=candidate
+                        &&(owesTurn(actor,tool,candidate,other,now)||delays(actor,candidate,other))))continue;
                 double weight=candidate.program().slot()==0?policy.firstSlotWeight():1;
                 if(lastSlot==candidate.program().slot())weight*=policy.repeatedWeight();
                 total+=weight;
@@ -77,6 +92,6 @@ public final class SpellCombatController {
         if(!actual||backend.recipient(actor,tool,enemy,plan.program(),plan.ability())!=plan.recipient()||!plan.recipient().isAlive()||plan.recipient().level()!=actor.level()
                 ||!backend.budget(actor,tool,plan.program()).affordable()||!backend.available(actor,tool,plan.program()))return false;
         if(!backend.cast(actor,tool,hand,plan.program()))return false;
-        lastSlot=plan.program().slot();clear();return true;
+        lastSlot=plan.program().slot();lastUsed.put(plan.program(),++uses);clear();return true;
     }
 }

@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-31",
+  "version": "0.1.2",
+  "core_commit": "7582e450b85191d85254a8e56c71980c23ecd366",
+  "validation": "NeoForge and Forge builds/reobfuscation passed; metadata, controller usage-history methods, license and no bundled Core checked. No runtime/GameTest launch.",
+  "artifacts": [
+    {
+      "loader": "neoforge",
+      "minecraft": "1.21.1",
+      "jar": "build\\libs\\ars-instinct-0.1.2-mc1.21.1-neoforge.jar",
+      "sha256": "ab93fc4a6dc677835c157a2cbc7c5c957a792af0f9300df39d68b5c4f84bf4d1",
+      "sources": "build\\libs\\ars-instinct-0.1.2-sources.jar",
+      "sources_sha256": "de5cebd1276cc578394137a66ffe36a0ed9d714ce30dda10fc8eeeed7c1ca2fb"
+    },
+    {
+      "loader": "forge",
+      "minecraft": "1.20.1",
+      "jar": "forge\\build\\libs\\ars-instinct-0.1.2-mc1.20.1-forge.jar",
+      "sha256": "0da047bd228456fca5e351a05c1650fedfaad07860401b488e9f9d9f1f3ec1f4",
+      "sources": "forge\\build\\libs\\ars-instinct-0.1.2-sources.jar",
+      "sources_sha256": "74ea4b193de8365e32abcc49718f3fd3d80c602e06022ed93aeb62d6359a6537"
+    }
+  ]
+}
