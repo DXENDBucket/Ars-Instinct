@@ -1,5 +1,7 @@
 # Ars Instinct — CurseForge materials
 
+CurseForge Project ID: **1776260**. Binary releases are connected to the shared publisher as `instinct`.
+
 Positioning: developer-facing library, intended to remain library-first as features grow. Gameplay content is supplied by consuming mods.
 
 - `icon.png`: original generated transparent PNG in the author's bucket series.
