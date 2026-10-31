@@ -61,6 +61,7 @@ public final class ProjectileAwareness {
         for(var projectile:found) {
             if(!projectile.isAlive()||projectile.isSpectator()||projectile.distanceToSqr(actor)>policy.radius()*policy.radius())continue;
             Entity source=projectile.getOwner();
+            if(source==null)source=ownerLookup.apply(projectile);
             if(friendly(actor,source))continue;
             var position=projectile.position();var velocity=projectile.getDeltaMovement();
             double impact=impact(actor,projectile,position,velocity);

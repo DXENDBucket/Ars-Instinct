@@ -26,17 +26,18 @@ public final class ProjectileCases {
         var self=arrow(h,actor,actor,new Vec3(0,0,-1));
         var friend=arrow(h,actor,servant,new Vec3(0,0,-1));
         var unknown=arrow(h,actor,null,new Vec3(0,0,-1));
-        var sensor=new ProjectileAwareness(ProjectileAwareness.Policy.DEFAULT,entity->entity==servant?actor:null);
+        var extraOwned=arrow(h,actor,null,new Vec3(0,0,-1));
+        var sensor=new ProjectileAwareness(ProjectileAwareness.Policy.DEFAULT,entity->entity==servant||entity==extraOwned?actor:null);
         var snapshot=sensor.tick(actor);
         h.assertTrue(snapshot.observations().stream().anyMatch(o->o.projectile()==incoming&&o.incoming()
                 &&o.origin()==ProjectileAwareness.Origin.NON_ALLIED),"Incoming non-allied projectile is recognized");
         h.assertTrue(snapshot.observations().stream().anyMatch(o->o.projectile()==outgoing&&!o.incoming()),"Nearby outgoing projectile is noticed but not incoming");
         h.assertTrue(snapshot.observations().stream().anyMatch(o->o.projectile()==unknown&&o.incoming()
                 &&o.origin()==ProjectileAwareness.Origin.UNKNOWN),"Unknown origin stays unknown, not declared an enemy caster");
-        h.assertTrue(snapshot.observations().stream().noneMatch(o->o.projectile()==self||o.projectile()==friend),"Self and owned ally projectiles are excluded");
+        h.assertTrue(snapshot.observations().stream().noneMatch(o->o.projectile()==self||o.projectile()==friend||o.projectile()==extraOwned),"Self, owned ally and caller-owned projectiles are excluded");
         h.setBlock(2,9,6,Blocks.STONE);sensor.clear();
         h.assertTrue(sensor.tick(actor).observations().stream().anyMatch(o->o.projectile()==incoming&&!o.incoming()),"An intervening wall stops predicted collision, not detection");
-        for(var p:List.of(incoming,outgoing,self,friend,unknown))p.discard();actor.discard();enemy.discard();servant.discard();sensor.clear();h.succeed();
+        for(var p:List.of(incoming,outgoing,self,friend,unknown,extraOwned))p.discard();actor.discard();enemy.discard();servant.discard();sensor.clear();h.succeed();
     }
     public static void cachedAndBounded(GameTestHelper h) {
         clearLane(h);var actor=h.spawn(EntityType.COW,2,8,2);actor.setNoAi(true);actor.setNoGravity(true);
