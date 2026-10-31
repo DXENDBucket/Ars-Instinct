@@ -1,0 +1,19 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "logo-brand",
+  "date": "2026-10-31",
+  "prompt_file": "icon-prompt.txt",
+  "references": [
+    "author bucket series Ars Conflux icon: style and composition only",
+    "vanilla Minecraft empty bucket sprite"
+  ],
+  "motif": "perception eye and branching decision nodes; library-first spellcasting AI",
+  "transparent_background": true,
+  "size": [
+    1254,
+    1254
+  ],
+  "sha256": "7b8dad5e8648d266b05dcbb5e0f56c773f1fc0b7f9f2c6d820ee0a77f9112ad1",
+  "postprocessing": "none; original generated PNG copied unchanged",
+  "scope": "CurseForge assets and documentation only; runtime mod version remains 0.1.5"
+}

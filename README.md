@@ -2,6 +2,8 @@
 
 Opt-in, reusable spellcasting AI for Ars Nouveau programs. Mod ID: `ars_instinct`. MIT, EndXiom.
 
+Ars Instinct is a developer-facing library. Its continuing role is to provide reusable APIs, controllers and perception for content authors; creature rosters, spell loadouts and distinctive combat behavior belong to consuming mods. [CurseForge listing materials](docs/curseforge/README.md) include the project icon and English/Chinese descriptions.
+
 ## Scope
 
 - Minecraft 1.21.1 NeoForge / Java 21 and 1.20.1 Forge / Java 17; shared version in `VERSION`.
