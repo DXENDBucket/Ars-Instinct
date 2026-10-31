@@ -74,6 +74,9 @@ public final class SpellCombatController {
                         &&(owesTurn(actor,tool,candidate,other,now)||delays(actor,candidate,other))))continue;
                 double weight=candidate.program().slot()==0?policy.firstSlotWeight():1;
                 if(lastSlot==candidate.program().slot())weight*=policy.repeatedWeight();
+                double preference=backend.selectionWeight(actor,tool,candidate.program());
+                if(!Double.isFinite(preference)||preference<=0)continue;
+                weight*=Math.min(preference,1000000);
                 total+=weight;
                 if(actor.getRandom().nextDouble()*total<weight)chosen=candidate;
             }

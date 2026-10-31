@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-31",
+  "version": "0.1.3",
+  "core_commit": "7582e450b85191d85254a8e56c71980c23ecd366",
+  "validation": "Builds, final-JAR license, optional source exclusion and declared refmap presence checked. Forge artifacts reobfuscated. No client/server/GameTest launch. Visuals and gameplay remain unverified.",
+  "artifacts": [
+    {
+      "loader": "neoforge",
+      "minecraft": "1.21.1",
+      "jar": "build\\libs\\ars-instinct-0.1.3-mc1.21.1-neoforge.jar",
+      "sha256": "4ac43ac8eac437b6f2c5f4e5d565bc86750b281c707b3eabd717b6438c620a8e",
+      "sources": "build\\libs\\ars-instinct-0.1.3-sources.jar",
+      "sources_sha256": "e047af3bf125af392f5fe9e2fcd4238577beda9b9681753c4e17324443143fdb"
+    },
+    {
+      "loader": "forge",
+      "minecraft": "1.20.1",
+      "jar": "forge\\build\\libs\\ars-instinct-0.1.3-mc1.20.1-forge.jar",
+      "sha256": "07975f49a30c788e30f86d36b362f4b99bda2f6c33a7401763cc8750ca5a7f88",
+      "sources": "forge\\build\\libs\\ars-instinct-0.1.3-sources.jar",
+      "sources_sha256": "1358d58833e36ac7b4b59499502a5b0791aba79aae90aa35b7b10ea7707e17da"
+    }
+  ]
+}

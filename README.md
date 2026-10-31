@@ -11,6 +11,12 @@ Opt-in, reusable spellcasting AI for Ars Nouveau programs. Mod ID: `ars_instinct
 
 The first implementation reads a program's starting form and first significant ability. A projectile replacement in the initial form's augments takes priority over following hit effects. Unknown/unlabelled abilities are skipped, rather than guessed to be hostile.
 
+## 0.1.3: optional ray tactics
+
+`NativeSpellBackend` now recognizes NEG's Ray form without a hard NEG dependency. `RayForms` reads its configured base/range-per-AOE values and actual cast stats; callers may register other ray range providers. Entity selection checks blocks and the first intersecting entity, using each loader's native entity filter. Forge planning deliberately clips at the actual block surface (the older native ray clips more loosely near a block center). The native resolver remains authoritative for visuals, payment and effects.
+
+`CombatBackend.selectionWeight` lets content prioritize suitable programs, while preserving shared-cooldown fairness, readiness and real resource budgets. The default weight is one, so existing selection is unchanged. Neither ray recognition nor this hook installs AI on new entities.
+
 ## 0.1.2: shared-cooldown opportunities
 
 The caller-owned controller records successfully submitted programs. Among ready, affordable, usable programs sharing a nonzero cooldown key, a more recently used program yields to an older one. The longer-cooldown preference remains for ties and waiting opportunities, but cannot permanently monopolize an older sibling. Independent cooldown groups retain weighted selection. History survives usefulness changes and ordinary plan clears, and is pruned when a program leaves the current loadout. No native cooldown is rewritten or bypassed. This batch is built for both loaders without launching game tests.

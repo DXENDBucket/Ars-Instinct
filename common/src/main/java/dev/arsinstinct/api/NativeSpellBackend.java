@@ -21,10 +21,16 @@ public class NativeSpellBackend implements CombatBackend {
         var method=spell.getCastMethod();
         if(method==MethodTouch.INSTANCE)return new SpellAbility(true,3,0,0);
         if(method==MethodSelf.INSTANCE)return new SpellAbility(true,12,0,0);
+        if(RayForms.supports(method))return new SpellAbility(false,RayForms.range(context(actor,tool,spell)),0,0);
         if(method==MethodProjectile.INSTANCE||CarrierRegistry.of(method)!=null)return new SpellAbility(false,48,0,0);
         return null;
     }
     protected SpellContext context(LivingEntity actor,ItemStack tool,Spell spell) {return SpellContext.fromEntity(spell,actor,tool);}
+    @Override public LivingEntity recipient(LivingEntity actor,ItemStack tool,LivingEntity enemy,Program program,SpellAbility ability) {
+        if(!RayForms.supports(program.spell().getCastMethod()))return CombatBackend.super.recipient(actor,tool,enemy,program,ability);
+        return CombatTargets.recipient(actor,enemy,program.spell(),ability.range(),
+                target->useful(actor,target,program.spell())&&RayForms.canHit(actor,target,context(actor,tool,program.spell())));
+    }
     @Override public boolean useful(LivingEntity actor,LivingEntity recipient,Spell spell) {
         return GlyphConditions.useful(ProgramIntent.of(spell).primary(),actor,recipient);
     }

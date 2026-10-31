@@ -27,6 +27,8 @@ public interface CombatBackend {
     boolean available(LivingEntity actor,ItemStack tool,Program program);
     boolean cast(LivingEntity actor,ItemStack tool,InteractionHand hand,Program program);
     default void select(LivingEntity actor,ItemStack tool,Program program) {}
+    /** Relative preference among usable programs. Cannot bypass shared cooldown fairness or payment. */
+    default double selectionWeight(LivingEntity actor,ItemStack tool,Program program) {return 1;}
     default boolean busy(LivingEntity actor) {return dev.arsconflux.api.casting.ActiveCasts.isChanting(actor)
             ||dev.arsconflux.api.execution.ExecutionSessions.isCasting(actor);}
     default long readyAt(LivingEntity actor,Program program) {return 0;}
