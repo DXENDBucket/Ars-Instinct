@@ -19,13 +19,31 @@ public class NativeSpellBackend implements CombatBackend {
     @Override public SpellAbility describe(LivingEntity actor,ItemStack tool,Spell spell) {
         if(!ProgramIntent.of(spell).known())return null;
         var method=spell.getCastMethod();
-        if(method==MethodTouch.INSTANCE)return new SpellAbility(true,3,0,0);
+        if(method==MethodTouch.INSTANCE)return new SpellAbility(true,touchRange(actor,tool,spell),0,0);
         if(method==MethodSelf.INSTANCE)return new SpellAbility(true,12,0,0);
         if(RayForms.supports(method))return new SpellAbility(false,RayForms.range(context(actor,tool,spell)),0,0);
         if(method==MethodProjectile.INSTANCE||CarrierRegistry.of(method)!=null)return new SpellAbility(false,48,0,0);
         return null;
     }
     protected SpellContext context(LivingEntity actor,ItemStack tool,Spell spell) {return SpellContext.fromEntity(spell,actor,tool);}
+    protected double touchRange(LivingEntity actor,ItemStack tool,Spell spell) {return 3;}
+    /** Resolve through the native interaction entry point; subclasses with their own active-cast
+     * policy should reuse this dispatch instead of calling SpellResolver.onCast unconditionally. */
+    protected boolean resolve(LivingEntity actor,ItemStack tool,InteractionHand hand,Program program) {
+        var resolver=new SpellResolver(context(actor,tool,program.spell())).withSilent(true);
+        if(program.spell().getCastMethod()!=MethodTouch.INSTANCE)return resolver.onCast(tool,actor.level());
+        double range=touchRange(actor,tool,program.spell());
+        if(!Double.isFinite(range)||range<=0)return false;
+        var from=actor.getEyePosition();var to=from.add(actor.getLookAngle().scale(range));
+        var block=actor.level().clip(new net.minecraft.world.level.ClipContext(from,to,
+                net.minecraft.world.level.ClipContext.Block.OUTLINE,
+                resolver.getCastStats().getBuffCount(com.hollingsworth.arsnouveau.common.spell.augment.AugmentSensitive.INSTANCE)>0
+                        ?net.minecraft.world.level.ClipContext.Fluid.ANY:net.minecraft.world.level.ClipContext.Fluid.NONE,actor));
+        if(block.getType()!=net.minecraft.world.phys.HitResult.Type.MISS)to=block.getLocation();
+        var entity=dev.arsinstinct.platform.NativeTouches.firstHit(actor,from,to);
+        if(entity!=null)return resolver.onCastOnEntity(tool,entity.getEntity(),hand);
+        return block.getType()!=net.minecraft.world.phys.HitResult.Type.MISS&&resolver.onCastOnBlock(block);
+    }
     @Override public LivingEntity recipient(LivingEntity actor,ItemStack tool,LivingEntity enemy,Program program,SpellAbility ability) {
         if(!RayForms.supports(program.spell().getCastMethod()))return CombatBackend.super.recipient(actor,tool,enemy,program,ability);
         return CombatTargets.recipient(actor,enemy,program.spell(),ability.range(),
@@ -54,6 +72,6 @@ public class NativeSpellBackend implements CombatBackend {
     @Override public boolean cast(LivingEntity actor,ItemStack tool,InteractionHand hand,Program program) {
         if(actor.level().isClientSide||actor.getItemInHand(hand)!=tool)return false;
         return ActiveCasts.perform(program.spell(),actor,hand,ActiveCastSource.CASTER_TOOL,
-                ()->new SpellResolver(context(actor,tool,program.spell())).withSilent(true).onCast(tool,actor.level()),false,true);
+                ()->resolve(actor,tool,hand,program),false,true);
     }
 }

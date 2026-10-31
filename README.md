@@ -11,6 +11,10 @@ Opt-in, reusable spellcasting AI for Ars Nouveau programs. Mod ID: `ars_instinct
 
 The first implementation reads a program's starting form and first significant ability. A projectile replacement in the initial form's augments takes priority over following hit effects. Unknown/unlabelled abilities are skipped, rather than guessed to be hostile.
 
+## 0.1.4: native touch interaction dispatch
+
+Touch uses native `SpellResolver.onCastOnEntity` / `onCastOnBlock` after a real, block-clipped interaction trace. Ars' generic `MethodTouch.onCast` always fails. Empty aim fails without payment; unpickable attached fireworks cannot intercept touch. The shared protected `NativeSpellBackend.resolve` also supports content adapters that own their active-cast policy. Override `touchRange` to keep planning and actual reach aligned (default 3). No automatic target hit, fake player, damage replacement or resource/cooldown bypass. Other cast forms retain the ordinary native entry point.
+
 ## 0.1.3: optional ray tactics
 
 `NativeSpellBackend` now recognizes NEG's Ray form without a hard NEG dependency. `RayForms` reads its configured base/range-per-AOE values and actual cast stats; callers may register other ray range providers. Entity selection checks blocks and the first intersecting entity, using each loader's native entity filter. Forge planning deliberately clips at the actual block surface (the older native ray clips more loosely near a block center). The native resolver remains authoritative for visuals, payment and effects.

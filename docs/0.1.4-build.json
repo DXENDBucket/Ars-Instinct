@@ -1,0 +1,23 @@
+{
+  "version": "0.1.4",
+  "core_commit": "7582e450b85191d85254a8e56c71980c23ecd366",
+  "validation": "NeoForge and Forge main/test sources compile; both binary/source archives pass static dispatch, license and dependency checks. Forge final JAR reobfuscated. Two new native interaction regression cases compile on both platforms but were not executed; no client/server/GameTest launched.",
+  "artifacts": [
+    {
+      "path": "build\\libs\\ars-instinct-0.1.4-mc1.21.1-neoforge.jar",
+      "sha256": "413fc5298c58d652d0ac39d8879b6d89189f37a18268cbcf1acaddf9cae83679"
+    },
+    {
+      "path": "build\\libs\\ars-instinct-0.1.4-sources.jar",
+      "sha256": "c8e9adf8271c02140ade6e3ad1cc3d83fd7d9f7ad1c4739e4bc314ecbd8d48e3"
+    },
+    {
+      "path": "forge\\build\\libs\\ars-instinct-0.1.4-mc1.20.1-forge.jar",
+      "sha256": "f5a1d1a6d3690ace8ce79ab1fa441a22900755f8c67251fae445fd54ab14ab1b"
+    },
+    {
+      "path": "forge\\build\\libs\\ars-instinct-0.1.4-sources.jar",
+      "sha256": "1862d6732e4b74802cfd1da8f2c4b447d44d96778345850f0ad9558939d8fd74"
+    }
+  ]
+}

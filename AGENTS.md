@@ -7,3 +7,5 @@
 - Labels are hints, never casting permission. Preserve real actors, native payment, native cooldowns and future-trigger billing. Unknown quotations must not become free casts.
 - Avoid entity-retaining global maps. A controller belongs to one caller/actor and revalidates its tool, program, recipient and delayed readiness.
 - Batch targeted validation. No client launch, shared-instance deployment, remote push or publication is implied by a build.
+
+- Native touch must use the native entity/block interaction resolver after a clipped pickable-entity trace; generic MethodTouch.onCast returns FAILURE. Content subclasses with their own cast coordination should call protected resolve, preserving native payment and actual hit geometry. Unpickable attached fireworks are not touch recipients.
