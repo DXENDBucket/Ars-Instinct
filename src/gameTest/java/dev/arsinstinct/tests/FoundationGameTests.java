@@ -4,6 +4,8 @@ import net.neoforged.neoforge.gametest.*;
 import dev.arsinstinct.tests.shared.FoundationCases;
 @GameTestHolder("ars_instinct") @PrefixGameTestTemplate(false)
 public final class FoundationGameTests {
+ @GameTest(template="empty",timeoutTicks=80) public static void projectileOrigins(GameTestHelper h){dev.arsinstinct.tests.shared.ProjectileCases.originsAndIncoming(h);}
+ @GameTest(template="empty",timeoutTicks=80) public static void projectileBudget(GameTestHelper h){dev.arsinstinct.tests.shared.ProjectileCases.cachedAndBounded(h);}
  @GameTest(template="empty",timeoutTicks=80) public static void nativeTouch(GameTestHelper h){dev.arsinstinct.tests.shared.TouchCases.nativeInteractions(h,false);}
  @GameTest(template="empty",timeoutTicks=80,batch="trigger_billing") public static void triggeredTouch(GameTestHelper h){dev.arsinstinct.tests.shared.TouchCases.nativeInteractions(h,true);}
  @GameTest(template="empty",timeoutTicks=80) public static void nativeStorage(GameTestHelper h){FoundationCases.nativeStorageSurvivesReloadAndReconfiguration(h);}

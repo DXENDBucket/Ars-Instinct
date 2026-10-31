@@ -9,3 +9,5 @@
 - Batch targeted validation. No client launch, shared-instance deployment, remote push or publication is implied by a build.
 
 - Native touch must use the native entity/block interaction resolver after a clipped pickable-entity trace; generic MethodTouch.onCast returns FAILURE. Content subclasses with their own cast coordination should call protected resolve, preserving native payment and actual hit geometry. Unpickable attached fireworks are not touch recipients.
+
+- ProjectileAwareness is opt-in caller-owned perception, not target permission or evasion. Keep spatial queries bounded/cached, report saturation and unknown ownership honestly, and release cached references on lifecycle changes. Source-specific owner lookups and evasive tactics belong to consumers. Do not globally install sensors or manipulate projectile velocity.

@@ -11,6 +11,10 @@ Opt-in, reusable spellcasting AI for Ars Nouveau programs. Mod ID: `ars_instinct
 
 The first implementation reads a program's starting form and first significant ability. A projectile replacement in the initial form's augments takes priority over following hit effects. Unknown/unlabelled abilities are skipped, rather than guessed to be hostile.
 
+## 0.1.5: opt-in projectile awareness
+
+`ProjectileAwareness` is a caller-owned, read-only sensor for native `Projectile` entities. Default policy: 32-block radius, one refresh every four ticks, 20-tick linear prediction and at most 128 candidates from the local spatial entity index. It excludes self/allied ownership, accepts a caller's additional owner lookup, distinguishes non-allied and unknown sources, and estimates incoming collision using relative movement plus block obstruction. Snapshots are immutable, report candidate saturation and need explicit lifecycle clearing. It grants no immunity, changes no projectile and installs no dodge/AI on any entity. Content decides how to react. Beams, area effects and non-Projectile custom entities are outside this initial sensor.
+
 ## 0.1.4: native touch interaction dispatch
 
 Touch uses native `SpellResolver.onCastOnEntity` / `onCastOnBlock` after a real, block-clipped interaction trace. Ars' generic `MethodTouch.onCast` always fails. Empty aim fails without payment; unpickable attached fireworks cannot intercept touch. The shared protected `NativeSpellBackend.resolve` also supports content adapters that own their active-cast policy. Override `touchRange` to keep planning and actual reach aligned (default 3). No automatic target hit, fake player, damage replacement or resource/cooldown bypass. Other cast forms retain the ordinary native entry point.

@@ -1,0 +1,23 @@
+{
+  "version": "0.1.5",
+  "core_commit": "7656eb25a8bc296a483eadb7a188b86530bfaf64",
+  "validation": "NeoForge and Forge main/regression sources compile, binaries/source archives packaged; Forge reobfuscated. License, sensor class, no embedded dependencies/test classes verified. New regression cases compiled but not executed. No client/server/GameTest launched.",
+  "artifacts": [
+    {
+      "path": "build\\libs\\ars-instinct-0.1.5-mc1.21.1-neoforge.jar",
+      "sha256": "4b1b1b49e068066c28f8f2bf9f721da738cde913d865963d6d79aa8b14757948"
+    },
+    {
+      "path": "build\\libs\\ars-instinct-0.1.5-sources.jar",
+      "sha256": "930fd18a8d6e4f981d7bceec981818d6d50f3e77c5d5676007feef9de0ad0fe5"
+    },
+    {
+      "path": "forge\\build\\libs\\ars-instinct-0.1.5-mc1.20.1-forge.jar",
+      "sha256": "d49d119570ddf62c84accc0c3431a78b52920a7ae68c3a71087a3c1b3219b4e5"
+    },
+    {
+      "path": "forge\\build\\libs\\ars-instinct-0.1.5-sources.jar",
+      "sha256": "1f1e82c4ebbc4466b43df37108348bcf1638ad1e52bbb494538d47415c42ed33"
+    }
+  ]
+}
